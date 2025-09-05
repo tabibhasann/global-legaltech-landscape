@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Global LegalTech Landscape: An Interactive Analysis</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Using Inter font from Google Fonts -->
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020617; /* slate-950 */
+        }
+        
+        /* Static gradient background for a modern, techy feel */
+        .static-gradient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-color: #020617;
+            background-image: radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.15) 0%, transparent 40%),
+                              radial-gradient(circle at 90% 80%, rgba(8, 77, 105, 0.2) 0%, transparent 40%);
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .table-cell-truncate {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        /* Glassmorphism effect for cards and containers */
+        .glassmorphism {
+            background: rgba(15, 23, 42, 0.6); /* slate-900 with opacity */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(51, 65, 85, 0.5); /* slate-700 with opacity */
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+        }
+        .glassmorphism:hover {
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
+            transform: translateY(-4px);
+        }
+        .matrix-cell {
+            min-height: 8rem;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .matrix-cell:hover {
+            background-color: rgba(30, 41, 59, 0.5); /* slate-800 */
+        }
+        .matrix-item {
+            transition: transform 0.2s ease-in-out;
+        }
+        .matrix-item:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+        /* Loading spinner animation */
+        .loader {
+            border: 4px solid #38bdf8; /* cyan-400 */
+            border-left-color: transparent;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Modal styles for smooth transitions */
+        .modal-overlay {
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        /* Section fade-in animation on scroll */
+        .animated-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .animated-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Typing indicator for chat */
+        .typing-indicator span {
+            height: 8px;
+            width: 8px;
+            background-color: #64748b; /* slate-500 */
+            border-radius: 50%;
+            display: inline-block;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+         /* Custom multi-select dropdown */
+        .tag-filter-container {
+            position: relative;
+        }
+        .tag-filter-dropdown {
+            position: absolute;
+            background-color: #1e293b; /* slate-800 */
+            border: 1px solid #334155; /* slate-700 */
+            border-radius: 0.5rem;
+            width: 100%;
+            z-index: 50;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200">
+<div class="static-gradient-bg"></div>
+<header class="bg-slate-950/70 backdrop-blur-lg sticky top-0 z-40 border-b border-slate-800">
+<nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex items-center justify-between h-16">
+<div class="flex items-center">
+<span class="text-xl font-bold text-cyan-400">Global LegalTech Compass</span>
+</div>
+<div class="hidden md:block">
+<div class="ml-10 flex items-baseline space-x-4">
+<a class="text-slate-300 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors" href="#dashboard">Dashboard</a>
+<a class="text-slate-300 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors" href="#database">Competitor Database</a>
+<a class="text-slate-300 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors" href="#strategy">Strategic Insights</a>
+<a class="text-slate-300 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors" href="#opportunity-matrix">Opportunity Matrix</a>
+<a class="text-slate-300 hover:bg-slate-800 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors" href="#ai-advisor">AI Advisor</a>
+</div>
+</div>
+</div>
+</nav>
+</header>
+<main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+<section class="mb-16 animated-section" id="dashboard">
+<div class="text-center mb-12">
+<h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-4">The Global LegalTech Landscape</h1>
+<p class="text-lg text-slate-400 max-w-3xl mx-auto">An interactive dashboard analyzing top legal technology startups and incumbent giants across key global hubs. This tool provides actionable insights into market leaders, regional trends, and strategic opportunities.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 text-center" id="stats-cards">
+<!-- Stats cards will be dynamically injected here -->
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+<div class="glassmorphism p-6 sm:p-8 rounded-2xl">
+<h3 class="text-2xl font-bold text-white mb-2 text-center">Investment Landscape: The Heavy Hitters</h3>
+<p class="text-slate-400 mb-8 text-center max-w-2xl mx-auto">This chart compares the total venture funding of the most well-capitalized startups from our global dataset.</p>
+<div class="chart-container">
+<canvas id="fundingChart"></canvas>
+</div>
+</div>
+<div class="glassmorphism p-6 sm:p-8 rounded-2xl">
+<h3 class="text-2xl font-bold text-white mb-2 text-center">Geographic Distribution</h3>
+<p class="text-slate-400 mb-8 text-center max-w-2xl mx-auto">This chart shows the distribution of leading legal tech companies across the key regions analyzed.</p>
+<div class="chart-container">
+<canvas id="countryChart"></canvas>
+</div>
+</div>
+</div>
+<div class="glassmorphism p-6 sm:p-8 rounded-2xl mb-12">
+<h3 class="text-2xl font-bold text-white mb-2 text-center">A Look at Key LegalTech Hubs</h3>
+<p class="text-slate-400 mb-8 text-center max-w-2xl mx-auto">Each region has a unique legal tech ecosystem. Click on a hub to understand its characteristics, strengths, and key players.</p>
+<div class="flex flex-wrap justify-center items-center gap-4" id="region-buttons-container">
+<!-- Region analysis buttons will be dynamically injected here -->
+</div>
+<div class="mt-6 p-6 bg-slate-800 rounded-lg text-center max-w-3xl mx-auto transition-all duration-300" id="region-details-container" style="display: none;">
+<h5 class="text-xl font-bold text-white mb-2" id="region-title"></h5>
+<p class="text-slate-300" id="region-description"></p>
+</div>
+</div>
+</section>
+<section class="mb-16 animated-section" id="database">
+<div class="glassmorphism p-6 sm:p-8 rounded-2xl">
+<h2 class="text-3xl font-bold tracking-tight text-white mb-2">Competitor Database</h2>
+<p class="text-slate-400 mb-8">This interactive database contains leading legal tech companies from around the world. Use the search and filter controls to conduct competitive analysis and explore the global ecosystem. Click any row for details.</p>
+<div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+<div class="md:col-span-1">
+<input class="w-full px-4 py-2 bg-slate-800 border border-slate-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition text-white" id="searchInput" placeholder="Search by company name..." type="text"/>
+</div>
+<div>
+<select class="w-full px-4 py-2 bg-slate-800 border border-slate-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition text-white" id="modelFilter">
+<option value="All">All Business Models</option>
+</select>
+</div>
+<div>
+<select class="w-full px-4 py-2 bg-slate-800 border border-slate-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition text-white" id="countryFilter">
+<option value="All">All Countries</option>
+</select>
+</div>
+<div>
+<select class="w-full px-4 py-2 bg-slate-800 border border-slate-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition text-white" id="marketFilter">
+<option value="All">All Target Markets</option>
+</select>
+</div>
+<div class="tag-filter-container">
+    <button id="tagFilterButton" class="w-full px-4 py-2 bg-slate-800 border border-slate-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition text-white text-left">Filter by Tags</button>
+    <div id="tagFilterDropdown" class="tag-filter-dropdown hidden mt-1">
+        <!-- Tags will be injected here -->
+    </div>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="min-w-full divide-y divide-slate-700">
+<thead class="bg-slate-800/50">
+<tr>
+<th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider cursor-pointer" onclick="sortTable(0)" scope="col">Company</th>
+<th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider" scope="col">Country</th>
+<th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider" scope="col">Core Function</th>
+<th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider" scope="col">Target Market</th>
+<th class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider cursor-pointer" onclick="sortTable(4)" scope="col">Funding (USD)</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-700" id="companyTableBody">
+<!-- Company data will be dynamically injected here -->
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section class="mb-16 animated-section" id="strategy">
+<div class="text-center mb-12">
+<h2 class="text-3xl font-bold tracking-tight text-white mb-2">Strategic Insights for Founders</h2>
+<p class="text-lg text-slate-400 max-w-3xl mx-auto">Building a successful LegalTech company requires more than just great technology. This section synthesizes key strategic lessons on identifying market gaps, choosing a viable business model, and learning from the past.</p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="glassmorphism p-6 sm:p-8 rounded-2xl">
+<h3 class="text-2xl font-bold text-white mb-4">Paths in B2C Legal Tech</h3>
+<div class="space-y-4" id="opportunities-container"></div>
+</div>
+<div class="glassmorphism p-6 sm:p-8 rounded-2xl">
+<h3 class="text-2xl font-bold text-white mb-4">Dominating B2B Niches</h3>
+<div class="space-y-4" id="models-container"></div>
+</div>
+<div class="glassmorphism p-6 sm:p-8 rounded-2xl flex flex-col">
+<h3 class="text-2xl font-bold text-white mb-4">AI Idea Generator</h3>
+<p class="text-slate-400 mb-6">Feeling stuck? Let our AI analyze the market and generate a unique startup idea based on the "white space" in the opportunity matrix.</p>
+<div class="flex-grow flex items-center justify-center">
+<button class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2" id="generateIdeaButton">
+<span id="ideaButtonText">Generate Startup Idea ✨</span>
+<div class="loader hidden" id="ideaLoadingIndicator"></div>
+</button>
+</div>
+</div>
+</div>
+<div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div class="bg-rose-900/30 border-l-4 border-rose-500 p-6 sm:p-8 rounded-r-lg">
+    <h3 class="text-2xl font-bold text-rose-300 mb-4">Post-Mortem: The Atrium Case Study</h3>
+    <p class="text-rose-300/80 mb-6">The spectacular rise and fall of Atrium provides critical lessons for the entire legal tech industry. Understanding its failure is essential for any new founder to avoid similar strategic pitfalls, regardless of geography.</p>
+    <div class="mt-6">
+    <h4 class="font-bold text-rose-300 mb-2">Key Reasons for Failure:</h4>
+    <ul class="list-disc list-inside space-y-2 text-rose-300/80">
+    <li><span class="font-semibold">Misaligned Business Model:</span> The tech startup side (incentivized for rapid scale) was in direct conflict with the law firm side (built on bespoke, high-touch service).</li>
+    <li><span class="font-semibold">Lack of Product-Market Fit:</span> Prioritized sales and growth over perfecting a technology product that offered unique, demonstrable value, leading to high churn.</li>
+    </ul>
+    </div>
+    </div>
+    <div class="bg-sky-900/30 border-l-4 border-sky-500 p-6 sm:p-8 rounded-r-lg">
+        <h3 class="text-2xl font-bold text-sky-300 mb-4">The Incumbent Factor</h3>
+        <p class="text-sky-300/80">While startups drive innovation, the legal tech landscape is dominated by giants like Thomson Reuters and LexisNexis. These incumbents possess massive datasets, deep client relationships, and significant capital.</p>
+        <p class="text-sky-300/80 mt-4">For startups, these giants represent both a threat and an opportunity. They are formidable competitors, but they are also the most likely acquirers of successful legal tech companies, as seen with Thomson Reuters' acquisition of Casetext.</p>
+    </div>
+</div>
+</section>
+<section class="mb-16 animated-section" id="opportunity-matrix">
+<div class="text-center mb-12">
+<h2 class="text-3xl font-bold tracking-tight text-white mb-2">Market Opportunity Matrix</h2>
+<div class="max-w-4xl mx-auto text-slate-400 text-lg space-y-4">
+<p>This matrix is your strategic map to the legal tech landscape. The <strong class="text-cyan-400">vertical axis</strong> represents key <strong class="text-cyan-400">customer segments</strong>, while the <strong class="text-cyan-400">horizontal axis</strong> shows the <strong class="text-cyan-400">core problems</strong> being solved. </p>
+<p>Clusters of companies indicate a <strong class="text-amber-400">crowded, competitive market</strong>. Empty or sparsely populated cells represent potential <strong class="text-emerald-400">"white space"</strong>—underserved areas that could be prime territory for your startup idea. <em class="text-sm">(Note: Incumbent giants and tech-enabled firms are not included in this matrix as their broad offerings cover multiple categories).</em></p>
+</div>
+<div class="glassmorphism p-4 sm:p-6 rounded-2xl overflow-x-auto" id="matrix-container">
+<!-- Matrix will be generated here -->
+</div>
+</section>
+<section class="animated-section" id="ai-advisor">
+<div class="text-center mb-12">
+<h2 class="text-3xl font-bold tracking-tight text-white mb-2">AI Strategic Advisor</h2>
+<p class="text-lg text-slate-400 max-w-3xl mx-auto">Have a question? Ask the AI Advisor to analyze the data on this page and provide custom insights for your startup idea. Your conversation is private and not stored.</p>
+</div>
+<div class="glassmorphism max-w-4xl mx-auto p-6 rounded-2xl">
+<div class="h-96 overflow-y-auto mb-4 p-4 bg-slate-800/50 rounded-lg space-y-4" id="chat-container">
+<div class="text-slate-300"><strong>AI Advisor:</strong> I have analyzed the leading legal tech companies on this dashboard. How can I help you brainstorm your startup idea? Try asking: <em class="text-cyan-400">"Which companies target small law firms?"</em> or <em class="text-cyan-400">"What are the common weaknesses of CLM companies?"</em></div>
+</div>
+<div class="flex items-center">
+<input class="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-l-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition text-white" id="userInput" placeholder="Ask a question..." type="text"/>
+<button class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-6 rounded-r-lg transition-colors flex items-center justify-center" id="sendButton">
+<span id="sendButtonText">Send</span>
+<div class="loader hidden" id="loadingIndicator"></div>
+</button>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-slate-950 mt-16 border-t border-slate-800">
+<div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-sm text-slate-500">
+<p>Interactive analysis of the global legal technology market.</p>
+<p>This is a tool for informational and analytical purposes only.</p>
+</div>
+</footer>
+<!-- Modal for AI Generated Idea -->
+<div class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden opacity-0 modal-overlay" id="ideaModal">
+<div class="glassmorphism rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col modal-content scale-95 opacity-0">
+<div class="flex justify-between items-center p-6 border-b border-slate-700">
+<h2 class="text-2xl font-bold text-white">Generated Startup Idea ✨</h2>
+<button class="text-slate-400 hover:text-white text-3xl" id="closeModalButton">×</button>
+</div>
+<div class="text-slate-300 space-y-4 p-6 overflow-y-auto" id="ideaContent">
+<!-- AI content will be injected here -->
+</div>
+</div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Data for top legal tech companies globally
+    const companyData = [
+        // B2B - For Legal Teams
+        { name: 'Ironclad', businessModel: 'B2B - For Legal Teams', country: 'USA', coreFunction: 'Contract Lifecycle Management (CLM)', targetMarket: 'In-house Legal', funding: 333000000, website: 'https://ironcladapp.com/', keyTechnology: 'Workflow Automation', strength: 'Market leader with a strong brand and a comprehensive, integrated platform.', weakness: 'Expensive with a steep learning curve, making it complex for smaller teams.', strategicTakeaway: 'Becoming the system of record for corporate contracts creates an incredibly sticky product with high switching costs.', tags: ['Workflow Tool', 'Automation', 'Contracts & Transactions'] },
+        { name: 'DISCO', businessModel: 'B2B - For Legal Teams', country: 'USA', coreFunction: 'eDiscovery', targetMarket: 'Litigation Teams', funding: 233000000, website: 'https://www.csdisco.com/', keyTechnology: 'AI & Cloud Computing', strength: 'Publicly traded company with a strong reputation in the high-stakes world of litigation.', weakness: 'Faces intense competition from other eDiscovery providers and large incumbents.', strategicTakeaway: 'Applying AI to massive datasets in high-stakes litigation offers a clear and compelling value proposition.', tags: ['AI-Powered', 'Data Analytics', 'Litigation & eDiscovery'] },
+        { name: 'Casetext', businessModel: 'B2B - For Legal Teams', country: 'USA', coreFunction: 'AI Legal Research', targetMarket: 'Law Firms', funding: 64300000, website: 'https://casetext.com/', keyTechnology: 'Generative AI', strength: 'Pioneering AI co-pilot (CoCounsel) that was a first-mover; acquired by Thomson Reuters for $650M.', weakness: 'Post-acquisition, innovation speed may slow as it integrates into a large corporation.', strategicTakeaway: 'A successful exit to a strategic incumbent validates the power of AI in disrupting the legal research duopoly.', tags: ['AI-Powered', 'Litigation & eDiscovery'] },
+        { name: 'Clio', businessModel: 'B2B - For Legal Teams', country: 'Canada', coreFunction: 'Practice Management', targetMarket: 'Law Firms', funding: 386000000, website: 'https://www.clio.com/', keyTechnology: 'Cloud Platform', strength: 'Dominant market share in the small-to-medium law firm space; huge annual conference builds a strong community.', weakness: 'Less focused on the needs of large "Big Law" firms.', strategicTakeaway: 'Creating a comprehensive, cloud-based "operating system" for a specific firm segment can lead to market domination.', tags: ['Workflow Tool'] },
+        { name: 'Alexi', businessModel: 'B2B - For Legal Teams', country: 'Canada', coreFunction: 'AI Litigation Memo Drafting', targetMarket: 'Litigation Teams', funding: 11000000, website: 'https://www.alexi.com/', keyTechnology: 'Generative AI', strength: 'Tackles high-value, substantive legal work, saving lawyers significant time on complex tasks.', weakness: 'Reliant on the accuracy and ongoing improvement of generative AI models.', strategicTakeaway: 'Automating high-quality, substantive legal work like memo drafting is the next frontier for generative AI in law.', tags: ['AI-Powered', 'Automation', 'Litigation & eDiscovery'] },
+        { name: 'Luminance', businessModel: 'B2B - For Legal Teams', country: 'UK', coreFunction: 'AI Document Review', targetMarket: 'M&A Teams, Law Firms', funding: 20900000, website: 'https://www.luminance.com/', keyTechnology: 'Machine Learning', strength: 'Strong traction in the European market and can analyze documents in any language.', weakness: 'Faces increasing competition from larger platforms adding similar AI features.', strategicTakeaway: 'Leveraging AI for high-volume document review in M&A can deliver significant time and cost savings.', tags: ['AI-Powered', 'Data Analytics', 'Contracts & Transactions'] },
+        { name: 'Robin AI', businessModel: 'B2B - For Legal Teams', country: 'UK', coreFunction: 'AI Contract Co-pilot', targetMarket: 'In-house Legal', funding: 39100000, website: 'https://www.robinai.co.uk/', keyTechnology: 'Generative AI & Human-in-the-loop', strength: 'Deep integration with MS Word meets lawyers where they work; hybrid model uses human lawyers to verify AI output.', weakness: 'Hybrid "human-in-the-loop" model can be challenging to scale profitably.', strategicTakeaway: 'Embedding an AI co-pilot directly into existing workflows and using humans for quality control can build trust quickly.', tags: ['AI-Powered', 'Workflow Tool', 'Contracts & Transactions'] },
+        { name: 'Smokeball', businessModel: 'B2B - For Legal Teams', country: 'Australia', coreFunction: 'Practice Management', targetMarket: 'Small Law Firms', funding: 30000000, website: 'https://www.smokeball.com.au/', keyTechnology: 'Activity Tracking', strength: 'Automatic time tracking feature is a major differentiator that directly impacts law firm profitability.', weakness: 'Primarily focused on the small law firm market in specific geographies.', strategicTakeaway: 'Automatically tracking all of a lawyer\'s activity to ensure all billable time is captured is a killer feature.', tags: ['Workflow Tool', 'Automation'] },
+        { name: 'Doctrine', businessModel: 'B2B - For Legal Teams', country: 'France', coreFunction: 'Legal Research & Intelligence', targetMarket: 'Law Firms', funding: 22000000, website: 'https://www.doctrine.fr/', keyTechnology: 'Search & Data Analytics', strength: 'Has become the dominant legal research platform in France, creating a strong local network effect.', weakness: 'Expansion outside of its core French-language market can be challenging.', strategicTakeaway: 'Centralizing and structuring a country\'s legal information can create a powerful, defensible local moat.', tags: ['Data Analytics'] },
+        
+        // B2B - For Businesses
+        { name: 'Pactum', businessModel: 'B2B - For Businesses', country: 'USA', coreFunction: 'Autonomous Negotiations', targetMarket: 'Enterprise Procurement', funding: 34000000, website: 'https://pactum.com/', keyTechnology: 'Autonomous AI Agents', strength: 'A futuristic solution that offers a clear ROI by finding savings in high-volume supplier contracts.', weakness: 'Requires large enterprises to trust an AI with direct negotiations, which can be a high hurdle.', strategicTakeaway: 'Deploying AI chatbots that can autonomously negotiate thousands of supplier contracts simultaneously is a game-changer.', tags: ['AI-Powered', 'Automation', 'Contracts & Transactions'] },
+        { name: 'SeedLegals', businessModel: 'B2B - For Businesses', country: 'UK', coreFunction: 'Startup Funding Automation', targetMarket: 'Startups', funding: 5300000, website: 'https://seedlegals.com/', keyTechnology: 'Platform & Workflow Automation', strength: 'Has become the de facto standard for early-stage funding rounds in the UK, creating a strong network effect.', weakness: 'Model is highly specific to UK law, making international expansion complex.', strategicTakeaway: 'Automating all the legal work for a complex process like fundraising on a single platform is incredibly sticky.', tags: ['Automation', 'Marketplace', 'Corporate & Startup Law'] },
+        { name: 'BRYTER', businessModel: 'B2B - For Businesses', country: 'Germany', coreFunction: 'No-Code Automation Platform', targetMarket: 'Enterprise Legal & Compliance', funding: 90000000, website: 'https://bryter.io/', keyTechnology: 'No-Code Development', strength: 'Empowers non-technical legal experts to build their own tools, driving adoption from the bottom up.', weakness: 'Success depends on the client\'s own motivation and ability to build useful applications.', strategicTakeaway: 'A no-code platform allows legal and compliance experts to become builders, unlocking massive automation potential.', tags: ['Automation', 'Workflow Tool'] },
+        { name: 'Clara', businessModel: 'B2B - For Businesses', country: 'Dubai', coreFunction: 'Startup Legal OS', targetMarket: 'Startups', funding: 3500000, website: 'https://clara.co/', keyTechnology: 'Platform Automation', strength: 'Addresses the specific needs of startups in emerging ecosystems like the Middle East.', weakness: 'A relatively new player in a market with established competitors in other regions.', strategicTakeaway: 'Creating a legal "operating system" for startups that automates formation and cap table management is crucial for emerging tech hubs.', tags: ['Automation', 'Workflow Tool', 'Corporate & Startup Law'] },
+        { name: 'OpenLaw (Tribute Labs)', businessModel: 'B2B - For Businesses', country: 'USA', coreFunction: 'Blockchain Legal Agreements', targetMarket: 'Web3 & DAO Communities', funding: null, website: 'https://www.tributelabs.xyz/', keyTechnology: 'Blockchain / Smart Contracts', strength: 'First-mover in applying blockchain to legal agreements, deep technical expertise in Web3.', weakness: 'Extremely niche market; the pivot to DAO tooling suggests the initial market was not large enough.', strategicTakeaway: 'Demonstrates the potential and challenges of using cutting-edge tech like blockchain for legal agreements.', tags: ['Automation', 'Contracts & Transactions'] },
+        
+        // B2C - Direct to Consumer
+        { name: 'LegalZoom', businessModel: 'B2C - Direct to Consumer', country: 'USA', coreFunction: 'Online Legal Services', targetMarket: 'Consumers & SMBs', funding: 811000000, website: 'https://www.legalzoom.com/', keyTechnology: 'Document Automation', strength: 'A household name with a massive marketing budget and strong brand recognition.', weakness: 'Often criticized for being a "document factory" with limited personalization.', strategicTakeaway: 'Building a powerful consumer brand can make basic legal services (wills, business formation) accessible and affordable at scale.', tags: ['B2C Innovation', 'Automation', 'Corporate & Startup Law'] },
+        { name: 'Rocket Lawyer', businessModel: 'B2C - Direct to Consumer', country: 'USA', coreFunction: 'Online Legal Services', targetMarket: 'Consumers & SMBs', funding: 54300000, website: 'https://www.rocketlawyer.com/', keyTechnology: 'Subscription Platform', strength: 'Subscription model creates recurring revenue and encourages customer loyalty.', weakness: 'Competes directly with LegalZoom and a growing number of niche B2C legal services.', strategicTakeaway: 'A subscription model for ongoing legal help can be a powerful alternative to one-off transaction fees.', tags: ['B2C Innovation', 'Marketplace'] },
+        { name: 'DoNotPay', businessModel: 'B2C - Direct to Consumer', country: 'USA', coreFunction: 'AI Consumer Rights Advocate', targetMarket: 'Consumers', funding: 27700000, website: 'https://donotpay.com/', keyTechnology: 'AI Chatbot', strength: 'Generates significant media attention with its bold "robot lawyer" concept, driving viral growth.', weakness: 'Has faced criticism regarding the reliability and success rate of its AI-driven legal actions.', strategicTakeaway: 'Using an AI "robot lawyer" to help consumers fight everyday injustices is a powerful and disruptive B2C concept.', tags: ['B2C Innovation', 'AI-Powered', 'Consumer Rights'] },
+        { name: 'Hello Divorce', businessModel: 'B2C - Direct to Consumer', country: 'USA', coreFunction: 'Online Divorce Platform', targetMarket: 'Consumers', funding: 5000000, website: 'https://hellodivorce.com/', keyTechnology: 'Workflow Automation', strength: 'Focuses on a single, emotionally charged life event with a more user-friendly and affordable approach.', weakness: 'A highly niche service; business growth depends on constantly acquiring new customers.', strategicTakeaway: 'A tech-driven, DIY platform can simplify a complex process like divorce, making it more affordable and less adversarial.', tags: ['B2C Innovation', 'Workflow Tool', 'Divorce & Family Law'] },
+        { name: 'Flightright', businessModel: 'B2C - Direct to Consumer', country: 'Germany', coreFunction: 'Passenger Rights Enforcement', targetMarket: 'Consumers', funding: null, website: 'https://www.flightright.com/', keyTechnology: 'Process Automation', strength: 'Dominant player in Europe for flight compensation claims; highly optimized, data-driven process.', weakness: 'Business model is entirely dependent on the volume of flight disruptions and airline policies.', strategicTakeaway: 'Using technology to efficiently process a high volume of a single type of consumer legal claim can be highly profitable.', tags: ['B2C Innovation', 'Automation', 'Consumer Rights'] },
+        { name: 'Lawpath', businessModel: 'B2C - Direct to Consumer', country: 'Australia', coreFunction: 'Online Legal Platform', targetMarket: 'SMBs', funding: 7500000, website: 'https://lawpath.com.au/', keyTechnology: 'Subscription Platform', strength: 'Strong focus on the underserved small business market in Australia with a subscription model.', weakness: 'Faces competition from global players expanding into the Australian market.', strategicTakeaway: 'A subscription-based platform giving small businesses access to legal documents and lawyers on demand is a strong model.', tags: ['B2C Innovation', 'Marketplace', 'Corporate & Startup Law'] },
+        { name: 'Avvo', businessModel: 'B2C - Direct to Consumer', country: 'USA', coreFunction: 'Lawyer Directory & Marketplace', targetMarket: 'Consumers', funding: 70500000, website: 'https://www.avvo.com/', keyTechnology: 'Online Marketplace & Q&A', strength: 'Huge brand recognition and SEO footprint from years of user-generated Q&A content. Acquired by Internet Brands.', weakness: 'Acquired by a larger corporation, potentially slowing innovation. Rating system has faced legal challenges.', strategicTakeaway: 'Content and community (like a Q&A forum) can be an incredibly powerful moat for attracting users and building a durable B2C legal brand.', tags: ['B2C Innovation', 'Marketplace', 'Data Analytics'] },
+        { name: 'LegalMatch', businessModel: 'B2C - Direct to Consumer', country: 'USA', coreFunction: 'Lawyer Matching Service', targetMarket: 'Consumers & SMBs', funding: null, website: 'https://www.legalmatch.com/', keyTechnology: 'Online Marketplace', strength: 'Long-standing presence (since 1999) and strong SEO. A well-known brand in the "find a lawyer" space.', weakness: 'Older technology stack. Faces competition from more integrated platforms and direct advertising.', strategicTakeaway: 'Proves the enduring value of a simple marketplace model, but highlights the need to innovate beyond basic lead generation.', tags: ['B2C Innovation', 'Marketplace'] },
+        { name: 'Zolvit', businessModel: 'B2C - Direct to Consumer', country: 'India', coreFunction: 'Online Business Compliance', targetMarket: 'Consumers & SMBs', funding: 10000000, website: 'https://www.zolvit.com/', keyTechnology: 'Platform & Workflow Automation', strength: 'Strong brand recognition in the massive Indian market for business formation and compliance (formerly Vakilsearch).', weakness: 'Operates in a market with significant regulatory complexity and price sensitivity.', strategicTakeaway: 'A platform approach that simplifies complex government compliance in a large, developing market is a massive opportunity.', tags: ['B2C Innovation', 'Automation', 'Workflow Tool', 'Corporate & Startup Law'] },
+
+        // Tech-Enabled Firms
+        { name: 'Morgan & Morgan', businessModel: 'Tech-Enabled Firm', country: 'USA', coreFunction: 'Personal Injury Law Firm', targetMarket: 'Consumers', funding: 'Revenue-Funded', website: 'https://www.forthepeople.com/', keyTechnology: 'Marketing & Operational Tech', strength: 'Unmatched scale and marketing prowess in the US personal injury market.', weakness: 'Not a tech company, so it cannot scale in the same way as a SaaS business.', strategicTakeaway: 'A traditional law firm can operate at massive scale if powered by best-in-class marketing and operational technology.', tags: ['B2C Innovation', 'Consumer Rights'] },
+        
+        // Incumbent Giants
+        { name: 'Thomson Reuters', businessModel: 'Incumbent Giant', country: 'Canada', coreFunction: 'Legal Research & Workflow', targetMarket: 'Global Legal Professionals', funding: 'Public Company', website: 'https://www.thomsonreuters.com/', keyTechnology: 'Vast Data & AI', strength: 'Owns indispensable data and workflow tools like Westlaw; deep relationships with every major law firm.', weakness: 'Large size can lead to slower innovation compared to agile startups.', strategicTakeaway: 'Leverages a massive portfolio of data and software and actively acquires innovative startups (like Casetext) to maintain market leadership.', tags: ['Data Analytics', 'AI-Powered'] },
+        { name: 'LexisNexis', businessModel: 'Incumbent Giant', country: 'USA', coreFunction: 'Legal Research & Analytics', targetMarket: 'Global Legal Professionals', funding: 'Public Company', website: 'https://www.lexisnexis.com/', keyTechnology: 'Vast Data & Analytics', strength: 'Vast, proprietary database of legal and news information; a leader in legal analytics.', weakness: 'Can be perceived as less innovative and more expensive than new market entrants.', strategicTakeaway: 'Combines a massive legal database with powerful analytics to provide data-driven insights, moving beyond simple research.', tags: ['Data Analytics'] },
+        { name: 'Wolters Kluwer', businessModel: 'Incumbent Giant', country: 'Netherlands', coreFunction: 'Compliance & Corporate Services', targetMarket: 'Enterprise Legal & Compliance', funding: 'Public Company', website: 'https://www.wolterskluwer.com/', keyTechnology: 'Expert Solutions', strength: 'Deeply embedded in the workflow of corporate legal, tax, and compliance departments.', weakness: 'Complex portfolio of products can be difficult to navigate for customers.', strategicTakeaway: 'Dominates the high-stakes world of compliance and regulatory information, providing essential workflow tools.', tags: ['Workflow Tool', 'Tax Law'] }
+    ];
+
+    const regionData = {
+        USA: { title: "USA: The Mature Market", description: "The US is the world's most mature and highly capitalized legal tech market, characterized by large, venture-backed scale-ups tackling complex enterprise problems.", color: 'rgba(59, 130, 246, 0.7)' },
+        Canada: { title: "Canada: The AI Powerhouse", description: "Canada has a strong legal tech ecosystem with a particular strength in AI and machine learning applications, producing global leaders in practice management and specialized legal research.", color: 'rgba(219, 39, 119, 0.7)' },
+        UK: { title: "UK: The Challenger Hub", description: "The UK boasts a vibrant and innovative legal tech scene, often seen as the primary hub outside the US. Strengths lie in contract automation and fintech-related legal services.", color: 'rgba(239, 68, 68, 0.7)' },
+        Germany: { title: "Germany: The B2B & Consumer Champion", description: "Germany's legal tech scene excels in B2B enterprise automation and has also produced powerful consumer-facing startups that enforce citizen rights at scale.", color: 'rgba(252, 211, 77, 0.7)' },
+        France: { title: "France: The Data & Niche Specialist", description: "The French legal tech market shows strength in creating deep, data-driven intelligence platforms for legal professionals, especially in specialized, high-value niches.", color: 'rgba(139, 92, 246, 0.7)' },
+        Australia: { title: "Australia: The SME & Practitioner Focus", description: "Australia's legal tech market is characterized by a strong focus on providing practical, efficient tools for small-to-medium enterprises (SMEs) and law practitioners.", color: 'rgba(245, 158, 11, 0.7)' },
+        Singapore: { title: "Singapore: The APAC Gateway", description: "Singapore is a rapidly emerging legal tech hub, heavily supported by government initiatives. It serves as a strategic gateway to the broader Southeast Asian market.", color: 'rgba(16, 185, 129, 0.7)' },
+        Dubai: { title: "Dubai: The Emerging Ecosystem", description: "Dubai's legal tech scene is in its early but promising stages, driven by the UAE's focus on digital transformation and servicing the burgeoning local startup ecosystem.", color: 'rgba(249, 115, 22, 0.7)' },
+        Israel: { title: "Israel: The Deep Tech Innovator", description: "Israel's 'Silicon Wadi' produces deep-tech legal startups with a strong focus on AI and sophisticated data analysis for complex legal challenges like litigation and contract review.", color: 'rgba(34, 211, 238, 0.7)' },
+        India: { title: "India: The Scalable Infrastructure Builder", description: "India's legal tech market is rapidly growing, with a focus on building scalable digital infrastructure for e-signatures, compliance, and document management for a massive domestic market.", color: 'rgba(244, 114, 182, 0.7)' },
+        Netherlands: { title: "Netherlands: The Compliance Core", description: "The Netherlands is a key hub for global companies focused on the critical and complex areas of legal and regulatory compliance software for large enterprises.", color: 'rgba(251, 146, 60, 0.7)' }
+    };
+
+    const opportunitiesData = [
+        { title: 'The "DIY" Model', content: 'Companies like LegalZoom and Hello Divorce empower users to handle legal processes themselves with user-friendly software, dramatically lowering costs. This works best for standardized, high-volume needs like wills or uncontested divorces.' },
+        { title: 'The "Advocate" Model', content: 'Companies like Flightright and DoNotPay use technology to handle a specific consumer problem from start to finish. They act as a tech-powered advocate, often taking a percentage of the winnings. This builds a strong consumer brand around solving a painful problem.' },
+        { title: 'The Subscription Model', content: 'Rocket Lawyer offers a subscription for ongoing legal help. This model creates recurring revenue and is best for users who have frequent, but small, legal needs.' }
+    ];
+
+    const modelsData = [
+        { title: 'Vertical SaaS', content: 'The most common model. Building a deep, industry-specific tool for a particular legal niche (e.g., Clio for practice management, Alexi for litigation memos). The key is to solve a very specific, high-value problem better than anyone else.' },
+        { title: 'Horizontal Platforms', content: 'Tools like Ironclad (CLM) or BRYTER (no-code) that can be used by legal teams across many different industries. This allows for a larger potential market but often faces more competition.' },
+        { title: 'Data as a Moat', content: 'Companies like Doctrine and Jus Mundi build their competitive advantage by aggregating and structuring unique legal data that is difficult to replicate. The more data they have, the more valuable their product becomes.' }
+    ];
+    
+    const matrixConfig = {
+        rows: ['Big Law & Enterprise', 'In-house Legal Teams', 'Small & Medium Law Firms', 'Startups & SMBs', 'Consumers'],
+        cols: ['Practice Management', 'Contract Lifecycle Mgmt (CLM)', 'eDiscovery & Litigation', 'Legal Research', 'Compliance & RegTech', 'Specialized Services']
+    };
+
+    const matrixData = {
+        'Big Law & Enterprise': { 'eDiscovery & Litigation': ['DISCO', 'LitiGate'], 'Legal Research': ['Casetext', 'Doctrine', 'Jus Mundi'], 'Compliance & RegTech': ['BRYTER', 'AsiaVerify'], 'AI Document Review': ['Luminance'], 'Knowledge Automation': ['Legal OS'] },
+        'In-house Legal Teams': { 'Contract Lifecycle Mgmt (CLM)': ['Ironclad', 'Juro', 'SpotDraft'], 'AI Contract Co-pilot': ['Robin AI'], 'AI Contract Review': ['LawGeex'], 'Autonomous Negotiations': ['Pactum'] },
+        'Small & Medium Law Firms': { 'Practice Management': ['Clio', 'Smokeball'], 'Legal Research': ['Blue J Legal'], 'Litigation Memo Drafting': ['Alexi'] },
+        'Startups & SMBs': { 'Startup Legal OS': ['Clara'], 'Startup Funding Automation': ['SeedLegals'], 'Online Legal Platform': ['Lawpath', 'Rocket Lawyer'], 'eSignature': ['Yousign'], 'Digital Document Infrastructure': ['Leegality'] },
+        'Consumers': { 'Online Legal Services': ['LegalZoom'], 'Passenger Rights Enforcement': ['Flightright'], 'Remote Online Notarization': ['Notarize (Proof)'], 'AI Consumer Rights Advocate': ['DoNotPay'], 'Online Divorce Platform': ['Hello Divorce'] }
+    };
+    
+    let currentSort = { column: 0, direction: 'asc' };
+    let fundingChartInstance = null;
+    let countryChartInstance = null;
+    let chatHistory = [];
+    let selectedTags = [];
+
+    const searchInput = document.getElementById('searchInput');
+    const modelFilter = document.getElementById('modelFilter');
+    const countryFilter = document.getElementById('countryFilter');
+    const marketFilter = document.getElementById('marketFilter');
+    const tagFilterButton = document.getElementById('tagFilterButton');
+    const tagFilterDropdown = document.getElementById('tagFilterDropdown');
+    const tableBody = document.getElementById('companyTableBody');
+    const userInput = document.getElementById('userInput');
+    const sendButton = document.getElementById('sendButton');
+    const chatContainer = document.getElementById('chat-container');
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    const sendButtonText = document.getElementById('sendButtonText');
+    const generateIdeaButton = document.getElementById('generateIdeaButton');
+    const ideaLoadingIndicator = document.getElementById('ideaLoadingIndicator');
+    const ideaButtonText = document.getElementById('ideaButtonText');
+    const ideaModal = document.getElementById('ideaModal');
+    const closeModalButton = document.getElementById('closeModalButton');
+    const ideaContent = document.getElementById('ideaContent');
+
+    function formatCurrency(value) {
+        if (value === null || value === undefined) return 'N/A';
+        if (typeof value === 'string') return value;
+        if (value >= 1000000000) return `$${(value / 1000000000).toFixed(1)}B`;
+        if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
+        if (value >= 1000) return `$${(value / 1000).toFixed(0)}K`;
+        return `$${value}`;
+    }
+
+    function populateFilters() {
+        const models = [...new Set(companyData.map(c => c.businessModel))].sort();
+        modelFilter.innerHTML = '<option value="All">All Business Models</option>';
+        models.forEach(model => {
+            const option = document.createElement('option');
+            option.value = model;
+            option.textContent = model;
+            modelFilter.appendChild(option);
+        });
+
+        const countries = [...new Set(companyData.map(c => c.country))].sort();
+        countryFilter.innerHTML = '<option value="All">All Countries</option>';
+        countries.forEach(country => {
+            const option = document.createElement('option');
+            option.value = country;
+            option.textContent = country;
+            countryFilter.appendChild(option);
+        });
+
+        const markets = [...new Set(companyData.map(c => c.targetMarket))].sort();
+        marketFilter.innerHTML = '<option value="All">All Target Markets</option>';
+        markets.forEach(market => {
+            const option = document.createElement('option');
+            option.value = market;
+            option.textContent = market;
+            marketFilter.appendChild(option);
+        });
+        
+        const allTags = [...new Set(companyData.flatMap(c => c.tags || []))].sort();
+        tagFilterDropdown.innerHTML = allTags.map(tag => `
+            <label class="flex items-center px-4 py-2 hover:bg-slate-700 cursor-pointer">
+                <input type="checkbox" class="form-checkbox h-4 w-4 bg-slate-800 border-slate-600 text-cyan-600 rounded focus:ring-cyan-500" value="${tag}">
+                <span class="ml-3 text-slate-200">${tag}</span>
+            </label>
+        `).join('');
+    }
+
+    function renderTable() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const model = modelFilter.value;
+        const country = countryFilter.value;
+        const market = marketFilter.value;
+
+        const filteredData = companyData.filter(company => {
+            const matchesSearch = company.name.toLowerCase().includes(searchTerm);
+            const matchesModel = model === 'All' || company.businessModel === model;
+            const matchesCountry = country === 'All' || company.country === country;
+            const matchesMarket = market === 'All' || company.targetMarket === market;
+            const matchesTags = selectedTags.length === 0 || selectedTags.every(tag => (company.tags || []).includes(tag));
+            return matchesSearch && matchesModel && matchesCountry && matchesMarket && matchesTags;
+        });
+
+        const sortedData = filteredData.sort((a, b) => {
+            let valA, valB;
+            if (currentSort.column === 0) { valA = a.name.toLowerCase(); valB = b.name.toLowerCase(); } 
+            else if (currentSort.column === 4) { 
+                valA = typeof a.funding === 'number' ? a.funding : -1;
+                valB = typeof b.funding === 'number' ? b.funding : -1;
+            }
+            else { return 0; }
+
+            if (valA < valB) return currentSort.direction === 'asc' ? -1 : 1;
+            if (valA > valB) return currentSort.direction === 'asc' ? 1 : -1;
+            return 0;
+        });
+
+        tableBody.innerHTML = '';
+        if (sortedData.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-slate-500">No companies found matching your criteria.</td></tr>`;
+            return;
+        }
+
+        sortedData.forEach(company => {
+            const row = document.createElement('tr');
+            const sanitizedName = company.name.replace(/[^a-zA-Z0-9]/g, '');
+            row.className = 'cursor-pointer bg-slate-800/50 hover:bg-slate-700/50 transition-colors';
+            row.dataset.companyId = sanitizedName;
+            
+            const detailHtml = `
+                <td colspan="5" class="p-0">
+                    <div class="p-6 bg-slate-800/90 border-l-4 border-cyan-400 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                        <div>
+                            <h4 class="text-slate-400 text-sm font-semibold mb-1 uppercase tracking-wider">Key Technology</h4>
+                            <p class="text-slate-200">${company.keyTechnology || 'N/A'}</p>
+                        </div>
+                        <div class="md:col-span-2">
+                             <h4 class="text-slate-400 text-sm font-semibold mb-1 uppercase tracking-wider">Tags</h4>
+                             <div class="flex flex-wrap gap-2 mt-2">
+                                ${company.tags ? company.tags.map(tag => `<span class="px-2 py-1 text-xs font-medium bg-slate-700 text-cyan-300 rounded-full">${tag}</span>`).join('') : 'N/A'}
+                             </div>
+                        </div>
+                        <div>
+                            <h4 class="text-slate-400 text-sm font-semibold mb-1 uppercase tracking-wider">Strength</h4>
+                            <p class="text-slate-200">${company.strength || 'N/A'}</p>
+                        </div>
+                        <div>
+                            <h4 class="text-slate-400 text-sm font-semibold mb-1 uppercase tracking-wider">Weakness</h4>
+                            <p class="text-slate-200">${company.weakness || 'N/A'}</p>
+                        </div>
+                        <div class="md:col-span-2">
+                             <h4 class="text-slate-400 text-sm font-semibold mb-1 uppercase tracking-wider">Strategic Takeaway</h4>
+                             <p class="text-cyan-300 italic">"${company.strategicTakeaway || 'N/A'}"</p>
+                        </div>
+                    </div>
+                </td>
+            `;
+
+            const companyNameHtml = company.website 
+                ? `<a href="${company.website}" target="_blank" rel="noopener noreferrer" class="font-medium text-cyan-400 hover:text-cyan-300 transition-colors" onclick="event.stopPropagation()">${company.name}</a>`
+                : `<span class="font-medium text-cyan-400">${company.name}</span>`;
+
+            row.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap">${companyNameHtml}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-400">${company.country}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-400 table-cell-truncate" title="${company.coreFunction}">${company.coreFunction}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-400 table-cell-truncate" title="${company.targetMarket}">${company.targetMarket}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-400">${formatCurrency(company.funding)}</td>
+            `;
+            
+            row.addEventListener('click', () => {
+                const detailRowId = `details-${sanitizedName}`;
+                let detailRow = tableBody.querySelector(`#${detailRowId}`);
+
+                if (detailRow) {
+                    detailRow.remove();
+                    row.classList.remove('bg-slate-700/80');
+                } else {
+                    detailRow = document.createElement('tr');
+                    detailRow.id = detailRowId;
+                    detailRow.innerHTML = detailHtml;
+                    row.insertAdjacentElement('afterend', detailRow);
+                    row.classList.add('bg-slate-700/80');
+                }
+            });
+
+            tableBody.appendChild(row);
+        });
+    }
+
+    window.sortTable = (columnIndex) => {
+        if (currentSort.column === columnIndex) {
+            currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+        } else {
+            currentSort.column = columnIndex;
+            currentSort.direction = 'asc';
+        }
+        renderTable();
+    };
+
+    function renderStatsCards() {
+        const totalCompanies = companyData.length;
+        const countryCounts = companyData.reduce((acc, c) => {
+            acc[c.country] = (acc[c.country] || 0) + 1;
+            return acc;
+        }, {});
+
+        const stats = [
+            { label: 'Total Companies', value: totalCompanies, color: 'cyan' },
+            { label: 'Americas (USA/CAN)', value: (countryCounts['USA'] || 0) + (countryCounts['Canada'] || 0), color: 'sky' },
+            { label: 'Europe', value: (countryCounts['UK'] || 0) + (countryCounts['Germany'] || 0) + (countryCounts['France'] || 0) + (countryCounts['Spain'] || 0) + (countryCounts['Netherlands'] || 0), color: 'rose' },
+            { label: 'APAC & MEA', value: (countryCounts['Australia'] || 0) + (countryCounts['Singapore'] || 0) + (countryCounts['Dubai'] || 0) + (countryCounts['Israel'] || 0) + (countryCounts['India'] || 0), color: 'emerald' }
+        ];
+
+        const statsContainer = document.querySelector('#stats-cards');
+        statsContainer.innerHTML = stats.map(stat => `
+            <div class="glassmorphism p-6 rounded-2xl">
+                <p class="text-4xl font-bold text-${stat.color}-400">${stat.value}</p>
+                <p class="text-sm font-medium text-slate-400 uppercase tracking-wider mt-1">${stat.label}</p>
+            </div>
+        `).join('');
+    }
+    
+    function renderRegionAnalysis() {
+        const container = document.getElementById('region-buttons-container');
+        container.innerHTML = Object.keys(regionData).map(key => `
+            <div class="text-center cursor-pointer p-4 rounded-lg hover:bg-slate-800 transition-colors" onclick="showRegionDetails('${key}')">
+                <h4 class="font-semibold text-white">${key}</h4>
+            </div>
+        `).join('');
+    }
+
+    window.showRegionDetails = (regionKey) => {
+        const container = document.getElementById('region-details-container');
+        document.getElementById('region-title').textContent = regionData[regionKey].title;
+        document.getElementById('region-description').textContent = regionData[regionKey].description;
+        container.style.display = 'block';
+    };
+
+    function renderFundingChart() {
+        if (fundingChartInstance) fundingChartInstance.destroy();
+        
+        const chartData = companyData.filter(c => typeof c.funding === 'number' && c.funding > 0).sort((a, b) => b.funding - a.funding).slice(0, 7);
+        const ctx = document.getElementById('fundingChart').getContext('2d');
+        
+        fundingChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartData.map(c => `${c.name} (${c.country})`),
+                datasets: [{
+                    label: 'Total Funding (USD)',
+                    data: chartData.map(c => c.funding),
+                    backgroundColor: 'rgba(34, 211, 238, 0.6)',
+                    borderColor: 'rgba(34, 211, 238, 1)',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                scales: {
+                    x: { beginAtZero: true, ticks: { color: '#94a3b8', callback: value => formatCurrency(value) }, grid: { color: 'rgba(100, 116, 139, 0.2)' } },
+                    y: { ticks: { color: '#cbd5e1' }, grid: { display: false } }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1e293b', titleColor: '#e2e8f0', bodyColor: '#cbd5e1',
+                        callbacks: { label: context => `${context.dataset.label || ''}: ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(context.parsed.x)}` }
+                    }
+                }
+            }
+        });
+    }
+
+    function renderCountryChart() {
+        if (countryChartInstance) countryChartInstance.destroy();
+
+        const countryCounts = companyData.reduce((acc, company) => {
+            acc[company.country] = (acc[company.country] || 0) + 1;
+            return acc;
+        }, {});
+
+        const labels = Object.keys(countryCounts).sort((a,b) => countryCounts[b] - countryCounts[a]);
+        const data = labels.map(label => countryCounts[label]);
+        const backgroundColors = labels.map(label => regionData[label].color);
+
+        const ctx = document.getElementById('countryChart').getContext('2d');
+        countryChartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Companies',
+                    data: data,
+                    backgroundColor: backgroundColors,
+                    borderColor: '#0f172a', // slate-900
+                    borderWidth: 2,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top', labels: { color: '#cbd5e1' } },
+                    tooltip: {
+                        backgroundColor: '#1e293b', titleColor: '#e2e8f0', bodyColor: '#cbd5e1',
+                    }
+                }
+            }
+        });
+    }
+
+    function renderInteractiveSections() {
+        const createDetailsHTML = (item) => `
+            <details class="group border-b border-slate-700 pb-4 last:border-b-0">
+                <summary class="flex justify-between items-center cursor-pointer list-none py-2">
+                    <span class="font-semibold text-slate-100 group-hover:text-cyan-400 transition-colors">${item.title}</span>
+                    <span class="text-cyan-400 group-open:rotate-90 transition-transform duration-200">&#9654;</span>
+                </summary>
+                <p class="mt-2 text-slate-400">${item.content}</p>
+            </details>
+        `;
+        document.getElementById('opportunities-container').innerHTML = opportunitiesData.map(createDetailsHTML).join('');
+        document.getElementById('models-container').innerHTML = modelsData.map(createDetailsHTML).join('');
+    }
+    
+    function renderOpportunityMatrix() {
+        const container = document.getElementById('matrix-container');
+        if (!container) return;
+
+        let tableHtml = '<div class="w-full">';
+        
+        // Header Row
+        tableHtml += '<div class="flex sticky top-0 z-20">';
+        tableHtml += '<div class="flex-none w-32 md:w-40 p-3 text-center font-bold text-sm text-slate-300 flex items-center justify-center sticky left-0 z-30 bg-slate-900/80 backdrop-blur-sm"></div>';
+        matrixConfig.cols.forEach(col => {
+            tableHtml += `<div class="flex-1 p-3 text-center font-bold text-sm text-slate-300 flex items-center justify-center min-w-[120px] md:min-w-[150px] bg-slate-900/80 backdrop-blur-sm">${col}</div>`;
+        });
+        tableHtml += '</div>';
+
+        // Data Rows
+        matrixConfig.rows.forEach(row => {
+            tableHtml += '<div class="flex">';
+            tableHtml += `<div class="flex-none w-32 md:w-40 p-3 text-center font-bold text-sm text-slate-300 flex items-center justify-center sticky left-0 z-20 bg-slate-900/80 backdrop-blur-sm">${row}</div>`;
+            matrixConfig.cols.forEach(col => {
+                const companiesInCell = [];
+                for (const key in matrixData[row]) {
+                    if (key === col) {
+                        companiesInCell.push(...matrixData[row][key]);
+                    }
+                }
+                
+                tableHtml += `<div class="flex-1 p-2 matrix-cell flex flex-wrap items-start content-start justify-center gap-2 border border-slate-700/50 min-w-[120px] md:min-w-[150px]">`;
+                companiesInCell.forEach(companyName => {
+                    const company = companyData.find(c => c.name === companyName);
+                    if(company) {
+                        const countryColor = regionData[company.country].color.replace('0.7', '1');
+                        tableHtml += `<div class="matrix-item relative group bg-slate-700 text-white text-xs font-semibold px-2 py-1 rounded-md flex items-center gap-1.5" style="border-left: 3px solid ${countryColor};">
+                                    ${company.name}
+                                    <div class="absolute bottom-full mb-2 w-64 bg-slate-800 text-left p-3 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30">
+                                        <h4 class="font-bold text-cyan-400">${company.name} (${company.country})</h4>
+                                        <p class="text-sm text-slate-300">${company.coreFunction}</p>
+                                        <em class="text-xs text-slate-400 mt-1 block">Takeaway: "${company.strategicTakeaway}"</em>
+                                    </div>
+                                 </div>`;
+                    }
+                });
+                tableHtml += `</div>`;
+            });
+            tableHtml += '</div>';
+        });
+
+        tableHtml += '</div>';
+        container.innerHTML = tableHtml;
+    }
+
+    async function handleAIChat(userMessage) {
+        if (!userMessage) return;
+
+        appendMessage(userMessage, 'user');
+        toggleLoading(true);
+        appendMessage('', 'typing');
+
+        const context = JSON.stringify(companyData);
+        const prompt = `You are a strategic advisor for a legal tech startup founder. Based on the following dataset of global legal tech companies, answer the user's question. Provide concise, actionable insights. Format your response using markdown (e.g., **bold** for headings, numbered lists for points). Dataset: ${context}\n\nUser Question: ${userMessage}`;
+        
+        chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+        
+        try {
+            const apiKey = ""; // API key will be injected by the environment
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            const payload = { contents: chatHistory };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`API request failed with status ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            document.querySelector('.typing-indicator-wrapper')?.remove();
+
+            if (result.candidates && result.candidates.length > 0 &&
+                result.candidates[0].content && result.candidates[0].content.parts &&
+                result.candidates[0].content.parts.length > 0) {
+                const aiMessage = result.candidates[0].content.parts[0].text;
+                appendMessage(aiMessage, 'ai');
+                chatHistory.push({ role: "model", parts: [{ text: aiMessage }] });
+            } else {
+                appendMessage("I'm sorry, I couldn't generate a response. Please try again.", 'ai');
+            }
+
+        } catch (error) {
+            console.error("Error calling Gemini API:", error);
+            document.querySelector('.typing-indicator-wrapper')?.remove();
+            appendMessage("There was an error connecting to the AI Advisor. Please check the console for details.", 'ai');
+        } finally {
+            toggleLoading(false);
+        }
+    }
+
+    async function generateStartupIdea() {
+        toggleIdeaLoading(true);
+
+        const whiteSpaces = [];
+        matrixConfig.rows.forEach(row => {
+            matrixConfig.cols.forEach(col => {
+                let companiesInCell = [];
+                if (matrixData[row]) {
+                    for (const key in matrixData[row]) {
+                         if (key === col) {
+                            companiesInCell.push(...matrixData[row][key]);
+                        }
+                    }
+                }
+                if (companiesInCell.length === 0) {
+                    whiteSpaces.push({ customer: row, problem: col });
+                }
+            });
+        });
+
+        const randomWhiteSpace = whiteSpaces.length > 0 ? whiteSpaces[Math.floor(Math.random() * whiteSpaces.length)] : { customer: "Startups & SMBs", problem: "Specialized Services"};
+        const inspirationCompanies = companyData.filter(c => c.businessModel.includes('B2C') && typeof c.funding === 'number' && c.funding > 0).sort(() => 0.5 - Math.random()).slice(0, 2);
+        
+        const prompt = `You are an experienced legal tech founder. Your task is to generate a compelling, novel startup idea based on the global market, with a focus on B2C or tech-enabled services.
+        
+        Identified Market Gap:
+        - Customer Segment: ${randomWhiteSpace.customer}
+        - Problem Area: ${randomWhiteSpace.problem}
+
+        Inspiration from successful global companies:
+        - Company 1: ${inspirationCompanies[0].name} (${inspirationCompanies[0].country}). Strategic Takeaway: "${inspirationCompanies[0].strategicTakeaway}"
+        - Company 2: ${inspirationCompanies[1].name} (${inspirationCompanies[1].country}). Strategic Takeaway: "${inspirationCompanies[1].strategicTakeaway}"
+
+        Based on this, generate a startup idea. Provide the following:
+        1.  **Startup Name:** A creative and memorable name.
+        2.  **The Problem:** A clear, concise statement of the problem this customer segment faces.
+        3.  **The Solution:** Describe your innovative product or service.
+        4.  **Business Model:** How will it make money? (e.g., Enterprise SaaS, PLG, Usage-based).
+        5.  **Why Now?:** What market or technology trend makes this the right time for this idea?
+        
+        Format the response clearly using markdown with headings (e.g., **Startup Name:**).`;
+
+        try {
+            const apiKey = ""; // API key will be injected by the environment
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!response.ok) throw new Error(`API Error: ${response.status}`);
+            
+            const result = await response.json();
+            const ideaText = result.candidates[0].content.parts[0].text;
+            
+            ideaContent.innerHTML = parseMarkdown(ideaText);
+            openModal();
+
+        } catch (error) {
+            console.error("Error generating idea:", error);
+            ideaContent.innerHTML = "<p>Sorry, I couldn't generate an idea at this moment. Please try again.</p>";
+            openModal();
+        } finally {
+            toggleIdeaLoading(false);
+        }
+    }
+
+    function openModal() {
+        ideaModal.classList.remove('hidden');
+        setTimeout(() => {
+            ideaModal.classList.remove('opacity-0');
+            ideaModal.querySelector('.modal-content').classList.remove('scale-95', 'opacity-0');
+        }, 10);
+    }
+
+    function closeModal() {
+        ideaModal.classList.add('opacity-0');
+        ideaModal.querySelector('.modal-content').classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            ideaModal.classList.add('hidden');
+        }, 300);
+    }
+
+    function parseMarkdown(text) {
+        let html = text
+            .replace(/\*\*(.*?)\*\*/g, '<h3 class="text-lg font-bold text-cyan-400 mt-4 mb-1">$1</h3>')
+            .replace(/\n/g, '<br>');
+        return html;
+    }
+
+    function appendMessage(message, sender) {
+        const messageElement = document.createElement('div');
+        if (sender === 'user') {
+            messageElement.className = 'text-right';
+            messageElement.innerHTML = `<div class="inline-block bg-cyan-600 text-white p-3 rounded-lg max-w-lg text-left">${message}</div>`;
+        } else if (sender === 'ai') {
+            messageElement.className = 'text-left';
+            messageElement.innerHTML = `<div class="inline-block bg-slate-700 text-slate-200 p-3 rounded-lg max-w-lg"><strong>AI Advisor:</strong><div class="mt-2 space-y-2">${parseMarkdown(message)}</div></div>`;
+        } else if (sender === 'typing') {
+            messageElement.className = 'text-left typing-indicator-wrapper';
+            messageElement.innerHTML = `<div class="inline-block bg-slate-700 text-slate-200 p-3 rounded-lg"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
+        }
+        chatContainer.appendChild(messageElement);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function toggleLoading(isLoading) {
+        if (isLoading) {
+            sendButton.disabled = true;
+            sendButtonText.classList.add('hidden');
+            loadingIndicator.classList.remove('hidden');
+        } else {
+            sendButton.disabled = false;
+            sendButtonText.classList.remove('hidden');
+            loadingIndicator.classList.add('hidden');
+        }
+    }
+    
+    function toggleIdeaLoading(isLoading) {
+        if (isLoading) {
+            generateIdeaButton.disabled = true;
+            ideaButtonText.classList.add('hidden');
+            ideaLoadingIndicator.classList.remove('hidden');
+        } else {
+            generateIdeaButton.disabled = false;
+            ideaButtonText.classList.remove('hidden');
+            ideaLoadingIndicator.classList.add('hidden');
+        }
+    }
+
+    // Event Listeners
+    searchInput.addEventListener('input', renderTable);
+    modelFilter.addEventListener('change', renderTable);
+    countryFilter.addEventListener('change', renderTable);
+    marketFilter.addEventListener('change', renderTable);
+    sendButton.addEventListener('click', () => {
+        handleAIChat(userInput.value.trim());
+        userInput.value = '';
+    });
+    userInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleAIChat(userInput.value.trim());
+            userInput.value = '';
+        }
+    });
+    generateIdeaButton.addEventListener('click', generateStartupIdea);
+    closeModalButton.addEventListener('click', closeModal);
+    ideaModal.addEventListener('click', (e) => {
+        if (e.target === ideaModal) closeModal();
+    });
+    
+    tagFilterButton.addEventListener('click', () => {
+        tagFilterDropdown.classList.toggle('hidden');
+    });
+
+    tagFilterDropdown.addEventListener('change', (e) => {
+        if (e.target.type === 'checkbox') {
+            selectedTags = Array.from(tagFilterDropdown.querySelectorAll('input:checked')).map(el => el.value);
+            renderTable();
+            const buttonText = selectedTags.length > 0 ? `${selectedTags.length} Tags Selected` : 'Filter by Tags';
+            tagFilterButton.textContent = buttonText;
+        }
+    });
+
+    document.addEventListener('click', function(event) {
+        if (!tagFilterButton.contains(event.target) && !tagFilterDropdown.contains(event.target)) {
+            tagFilterDropdown.classList.add('hidden');
+        }
+    });
+
+
+    const animatedSections = document.querySelectorAll('.animated-section');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    animatedSections.forEach(section => {
+        observer.observe(section);
+    });
+
+    // Initial data load and render
+    populateFilters();
+    renderTable();
+    renderStatsCards();
+    renderFundingChart();
+    renderCountryChart();
+    renderRegionAnalysis();
+    renderInteractiveSections();
+    renderOpportunityMatrix();
+});
+</script>
+</body>
+</html>
+
